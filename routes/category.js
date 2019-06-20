@@ -29,9 +29,15 @@ router.get('/:id', (req, res) => {
 });
 
 router.patch('/:id', (req,res) => {
-  Category.update({...req.body}, {where: {id: req.params.id}})
+  Category.update({ ...req.body }, {where: {id: req.params.id}})
     .then(response.inserted(res, "updated"))
     .catch(err => response.error(res, err));
-})
+});
+
+router.delete('/:id', (req,res) => {
+  Category.destroy({ where: {id:req.params.id} })
+    .then(response.inserted(res, "deleted"))
+    .catch(err => response.error(res, err));
+});
 
 module.exports = router;
