@@ -9,10 +9,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       categoryId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {         // User belongsTo Company 1:1
+          model: 'categories',
+          key: 'id'
+        }
       },
       content: {
         type: Sequelize.TEXT
