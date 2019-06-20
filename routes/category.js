@@ -1,19 +1,37 @@
 const express = require('express');
 const router = express.Router();
+const response = require('../response');
 const Category = require('../models').Category;
 
-/* GET home page. */
+/* Category */
 router.get('/', (req, res) =>{
-  res.status(200).json({  
-    hallo: "Saya keren"
-  })
+  Category
+    .findAll()
+    .then(category => {
+      category.length > 0 ? response.success(res, category) : response.notFound(res);
+    })
+    .catch(err => response.error(res, err));
 });
 
 router.post('/', (req, res) => {
-  Category.create({
-    name : req.body.name
-  })
-    .then(() => res.json({ status: "ok" }));
+  Category.create({ ...req.body })
+  .then(() => response.inserted(res, "inserted"))
+  .catch(err => response.error(res, err));
+});
+
+/* Category with params */
+router.get('/:id', (req, res) => {
+  Category.findOne({where: { id:req.params.id }})
+    .then(category => {
+      category !== null ? response.success(res, category) : response.notFound(res);
+    })
+    .catch(err => response.error(res, err));
+});
+
+router.patch('/:id', (req,res) => {
+  Category.update({...req.body}, {where: {id: req.params.id}})
+    .then(response.inserted(res, "updated"))
+    .catch(err => response.error(res, err));
 })
 
 module.exports = router;

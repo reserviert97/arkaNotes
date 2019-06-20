@@ -4,10 +4,12 @@ const Note = require('../models').Note;
 
 /* GET home page. */
 router.get('/', (req, res) =>{
-  res.status(200).json({
-    hallo: "Saya keren"
+  Note.findAll().then(category => {
+    res.status(200).json(category);
   })
 });
+
+router
 
 router.post('/', (req, res) => {
   Note.create({
@@ -18,6 +20,7 @@ router.post('/', (req, res) => {
     .then(() => res.json({
       status: "ok"
     }));
-})
+});
+
 
 module.exports = router;
