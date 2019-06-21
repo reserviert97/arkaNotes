@@ -1,10 +1,29 @@
 'use strict'
 
+/* Success Response */
 exports.success = (res, value) => {
   const result = {
     status: {
       code : 200,
       message : "success"
+    },
+    result: value
+  }
+  res.status(200).json({ arkanotes:result });
+  res.end();
+}
+
+exports.withQuery = (res, value, queryInfo) => {
+  const result = {
+    status: {
+      code : 200,
+      message : "success"
+    },
+    query: {
+      page: queryInfo.page,
+      limit: queryInfo.limit,
+      totalRows: queryInfo.totalRows,
+      totalPage: queryInfo.totalPage
     },
     result: value
   }
@@ -22,6 +41,8 @@ exports.inserted = (res, message) => {
   res.status(201).json({ arkanotes:result });
   res.end();
 }
+
+/* Error Response */
 
 exports.notFound = (res) => {
   const result = {
