@@ -5,8 +5,7 @@ const Category = require('../models').Category;
 
 /* Category */
 router.get('/', (req, res) =>{
-  Category
-    .findAll()
+  Category.findAll()
     .then(category => {
       category.length > 0 ? response.success(res, category) : response.notFound(res);
     })

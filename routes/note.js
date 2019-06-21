@@ -3,18 +3,17 @@ const router = express.Router();
 const Note = require('../models').Note;
 const Category = require('../models').Category;
 const response = require('../response');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+const Op = require('sequelize').Op;
 
 /* Note */
 router.get('/', (req, res) =>{
   const {search, limit, sort, page} = req.query;
   const options = {
-    attributes: ['id', 'title', 'categoryId', 'content', 'createdAt', 'updatedAt' ],
-      include: [{ model: Category, attributes: ['name'] }],
-      order: [['createdAt', 'desc']],
-      limit: 10,
-      offset: 0
+    attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt' ],
+    include: [{ model: Category, attributes: ['name'] }],
+    order: [['createdAt', 'desc']],
+    limit: 10,
+    offset: 0
   };
 
   // only pagination active
@@ -43,28 +42,20 @@ router.get('/', (req, res) =>{
   }
   // search active
   else if(search && !page){
-    options.where = {
-      title: {
-        [Op.like] : '%'+search+'%'
-      }
-    };
+    options.where = { title: { [Op.like] : '%'+search+'%' } };
   }
 
-  Note.count()
-    .then(rows => {
-      Note.findAll(options)
+  Note.findAndCountAll(options)
       .then(note => {
         const queryInfo = {
-          totalRows: rows,
+          totalRows: note.count,
           page: page || 1,
-          totalPage: limit ? Math.ceil(rows / limit) : Math.ceil(rows / 10),
+          totalPage: limit ? Math.ceil(note.count / limit) : Math.ceil(note.count / 10),
           limit: limit || 10
         }
-        note.length > 0 ? response.withQuery(res, note, queryInfo) : response.notFound(res); 
+        note.rows.length > 0 ? response.withQuery(res, note.rows, queryInfo) : response.notFound(res); 
       })
       .catch(err => response.error(res, err));
-    })
-    .catch(err => response.error(res, err));
 });
 
 router.post('/', (req, res) => {
@@ -77,9 +68,7 @@ router.post('/', (req, res) => {
 router.get('/:id', (req, res) => {
   Note.findOne({
     where: { id:req.params.id },
-    include: [{ 
-      model: Category
-    }]
+    include: [{ model: Category }]
   })
     .then(note => {
       note !== null ? response.success(res, note) : response.notFound(res);
