@@ -9,7 +9,7 @@ const Op = require('sequelize').Op;
 router.get('/', (req, res) =>{
   const {search, limit, sort, page} = req.query;
   const options = {
-    attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt' ],
+    attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt'],
     include: [{ model: Category, attributes: ['name'] }],
     order: [['createdAt', 'desc']],
     limit: 10,
@@ -41,8 +41,19 @@ router.get('/', (req, res) =>{
     options.offset = page == 1 ? 0 : (page - 1) * limit;
   }
   // search active
-  else if(search && !page){
+  else if(search && !page && !limit){
     options.where = { title: { [Op.like] : '%'+search+'%' } };
+  }
+  // search active pagination active
+  else if(search && page && !limit){
+    options.where = { title: { [Op.like] : '%'+search+'%' } };
+    options.offset = page == 1 ? 0 : (page - 1) * 10;
+  }
+  // search active pagination active and limit active
+  else if(search && page && limit){
+    options.where = { title: { [Op.like] : '%'+search+'%' } };
+    options.limit = parseInt(limit);
+    options.offset = page == 1 ? 0 : (page - 1) * limit;
   }
 
   Note.findAndCountAll(options)
@@ -67,7 +78,7 @@ router.post('/', (req, res) => {
 /* Note with params */
 router.get('/:id', (req, res) => {
   Note.findOne({
-    where: { id:req.params.id },
+    where: { ...req.params },
     include: [{ model: Category }]
   })
     .then(note => {
