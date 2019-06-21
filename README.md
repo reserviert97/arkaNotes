@@ -10,6 +10,8 @@ cp env-example .env
 ```
 then you should fill some configurations like port and database
 
+
+
 ``` bash
 # Install dependencies
 npm install
