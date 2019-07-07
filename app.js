@@ -10,7 +10,7 @@ const categoryRouter = require('./routes/category');
 
 const app = express();
 
-const whitelist = ['http://192.168.6.180', 'http://localhost:3000'];
+const whitelist = ['http://192.168.6.180', 'http://192.168.100.22'];
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1) {

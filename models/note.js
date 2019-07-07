@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Note.associate = function(models) {
     // associations can be defined here
-    Note.belongsTo(models.Category, {foreignKey: 'categoryId'})
+    Note.belongsTo(models.Category, {foreignKey: 'categoryId', onDelete: 'SET NULL' })
   };
   return Note;
 };

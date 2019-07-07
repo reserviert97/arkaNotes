@@ -14,11 +14,13 @@ module.exports = {
       },
       categoryId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {         // User belongsTo Company 1:1
           model: 'categories',
-          key: 'id'
-        }
+          key: 'id',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
       },
       content: {
         type: Sequelize.TEXT

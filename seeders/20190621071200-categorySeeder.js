@@ -11,10 +11,11 @@ module.exports = {
     */
       let data = [];
 
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= 4; i++) {
         data.push({
           name: faker.random.word(),
-          createdAt: new Date(),
+          icon: 'http://cdn.onlinewebfonts.com/svg/img_464408.png',
+          createdAt: faker.date.between('2019-01-01', '2019-05-22'),
           updatedAt: new Date()
         })
         

@@ -7,17 +7,17 @@ const Op = require('sequelize').Op;
 
 /* Note */
 router.get('/', (req, res) =>{
-  const {search, limit, sort, page} = req.query;
+  const {search, limit, sort, page, category} = req.query;
   const options = {
     attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt'],
-    include: [{ model: Category, attributes: ['name'] }],
+    include: [{ model: Category, attributes: ['id', 'name'] }],
     order: [['createdAt', 'desc']],
     limit: 10,
     offset: 0
   };
 
   // only pagination active
-  if (page && !limit && !search && !sort) {  
+  if (page && !limit && !search && !sort && !category) {  
     options.offset = page == 1 ? 0 : (page - 1) * 10;
   } 
   // pagination and limit active
@@ -56,22 +56,33 @@ router.get('/', (req, res) =>{
     options.offset = page == 1 ? 0 : (page - 1) * limit;
   }
 
+  else if(category && !page && !limit && !search){
+    options.where = { categoryId : category };
+    options.limit = 20;
+  }
+
   Note.findAndCountAll(options)
       .then(note => {
         const queryInfo = {
           totalRows: note.count,
-          page: page || 1,
+          page: parseInt(page) || 1,
           totalPage: limit ? Math.ceil(note.count / limit) : Math.ceil(note.count / 10),
-          limit: limit || 10
+          limit: parseInt(limit) || 10
         }
-        note.rows.length > 0 ? response.withQuery(res, note.rows, queryInfo) : response.notFound(res); 
+        response.successWithInfo(res, note.rows, queryInfo); 
       })
       .catch(err => response.error(res, err));
 });
 
 router.post('/', (req, res) => {
   Note.create({ ...req.body })
-    .then(() => response.inserted(res, "inserted"))
+    .then(data => {
+      Note.findOne({
+        where: {id: data.id},
+        attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt'],
+        include: [{ model: Category, attributes: ['id', 'name'] }]
+      }).then(result => response.inserted(res, result, "inserted"))
+    })
     .catch(err => response.error(res, err));
 });
 
@@ -89,14 +100,27 @@ router.get('/:id', (req, res) => {
 
 router.patch('/:id', (req,res) => {
   Note.update({ ...req.body }, {where: {id: req.params.id}})
-    .then(response.inserted(res, "updated"))
+    .then(() => {
+      Note.findOne({
+        where: {id: req.params.id},
+        attributes: ['id', 'title', 'content', 'createdAt', 'updatedAt'],
+        include: [{ model: Category, attributes: ['id', 'name'] }]
+      }).then(result => response.inserted(res, result, "updated"))
+    })
     .catch(err => response.error(res, err));
 });
 
 router.delete('/:id', (req,res) => {
-  Note.destroy({ where: {id:req.params.id} })
-    .then(response.inserted(res, "deleted"))
-    .catch(err => response.error(res, err));
+  Note.findOne({
+    where: { ...req.params },
+    include: [{ model: Category }]
+  })
+    .then(note => {
+      Note.destroy({ where: {id:req.params.id} })
+        .then(result => response.inserted(res, note, "deleted"))
+        .catch(err => response.error(res, err));
+    })
+  
 });
 
 module.exports = router;

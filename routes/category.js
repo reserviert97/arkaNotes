@@ -14,13 +14,13 @@ router.get('/', (req, res) =>{
 
 router.post('/', (req, res) => {
   Category.create({ ...req.body })
-  .then(() => response.inserted(res, "inserted"))
+  .then((data) => response.inserted(res, data,"inserted"))
   .catch(err => response.error(res, err));
 });
 
 /* Category with params */
 router.get('/:id', (req, res) => {
-  Category.findOne({where: { id:req.params.id }})
+  Category.findOne({where: { id: req.params.id }})
     .then(category => {
       category !== null ? response.success(res, category) : response.notFound(res);
     })
@@ -34,8 +34,14 @@ router.patch('/:id', (req,res) => {
 });
 
 router.delete('/:id', (req,res) => {
-  Category.destroy({ where: {id:req.params.id} })
-    .then(response.inserted(res, "deleted"))
+  Category.findOne({
+    where: { ...req.params }
+  })
+    .then(category => {
+      Category.destroy({ where: {id:req.params.id} })
+        .then(result => response.inserted(res, category, "deleted"))
+        .catch(err => response.error(res, err));
+    })
     .catch(err => response.error(res, err));
 });
 

@@ -13,7 +13,7 @@ exports.success = (res, value) => {
   res.end();
 }
 
-exports.withQuery = (res, value, queryInfo) => {
+exports.successWithInfo = (res, value, queryInfo) => {
   const result = {
     status: {
       code : 200,
@@ -31,12 +31,13 @@ exports.withQuery = (res, value, queryInfo) => {
   res.end();
 }
 
-exports.inserted = (res, message) => {
+exports.inserted = (res, data, message) => {
   const result = {
     status: {
       code : 201,
-      message : `data successfully ${message}`  
-    }
+      message : `data successfully ${message}`,
+    },
+    data : data
   }
   res.status(201).json({ arkanotes:result });
   res.end();
