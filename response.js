@@ -1,23 +1,23 @@
-'use strict'
+'use strict';
 
 /* Success Response */
 exports.success = (res, value) => {
   const result = {
     status: {
-      code : 200,
-      message : "success"
+      code: 200,
+      message: 'success'
     },
     result: value
-  }
-  res.status(200).json({ arkanotes:result });
+  };
+  res.status(200).json({ arkanotes: result });
   res.end();
-}
+};
 
 exports.successWithInfo = (res, value, queryInfo) => {
   const result = {
     status: {
-      code : 200,
-      message : "success"
+      code: 200,
+      message: 'success'
     },
     query: {
       page: queryInfo.page,
@@ -26,43 +26,43 @@ exports.successWithInfo = (res, value, queryInfo) => {
       totalPage: queryInfo.totalPage
     },
     result: value
-  }
-  res.status(200).json({ arkanotes:result });
+  };
+  res.status(200).json({ arkanotes: result });
   res.end();
-}
+};
 
 exports.inserted = (res, data, message) => {
   const result = {
     status: {
-      code : 201,
-      message : `data successfully ${message}`,
+      code: 201,
+      message: `data successfully ${message}`
     },
-    data : data
-  }
-  res.status(201).json({ arkanotes:result });
+    data: data
+  };
+  res.status(201).json({ arkanotes: result });
   res.end();
-}
+};
 
 /* Error Response */
 
-exports.notFound = (res) => {
+exports.notFound = res => {
   const result = {
     status: {
-      code : 404,
-      message : "no entry found"
+      code: 404,
+      message: 'no entry found'
     }
-  }
-  res.status(200).json({ arkanotes:result });
+  };
+  res.status(200).json({ arkanotes: result });
   res.end();
-}
+};
 
 exports.error = (res, err) => {
   const result = {
     status: {
-      code : 500,
-      message : err.message
+      code: 500,
+      message: err.message
     }
-  }
-  res.status(500).json({ arkanotes:result });
+  };
+  res.status(500).json({ arkanotes: result });
   res.end();
-}
+};
